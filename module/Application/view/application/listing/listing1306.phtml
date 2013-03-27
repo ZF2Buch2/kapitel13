@@ -1,0 +1,116 @@
+<?php 
+/**
+ * ZF2 Buch Kapitel 13
+ * 
+ * Das Buch "Zend Framework 2 - Von den Grundlagen bis zur fertigen Anwendung"
+ * von Ralf Eggert ist im Addison-Wesley Verlag erschienen. 
+ * ISBN 978-3-8273-2994-3
+ * 
+ * @package    Application
+ * @author     Ralf Eggert <r.eggert@travello.de>
+ * @copyright  Alle Listings sind urheberrechtlich geschützt!
+ * @link       http://www.zendframeworkbuch.de/ und http://www.awl.de/2994
+ */
+
+/**
+ * Listing 13.6 view script
+ * 
+ * @package    Application
+ */
+?>
+<div class="row">
+<div class="span9">
+<h1>Listing 13.6</h1>
+<h3>ACL mit <code>Zend\Cache</code> speichern</h3>
+<pre>
+&lt;?php
+use Zend\Cache\StorageFactory;
+use Zend\Debug\Debug;
+use Zend\Permissions\Acl\Acl;
+
+$cache = StorageFactory::factory(array(
+    'adapter' => array(
+        'name' => 'filesystem',
+        'options' => array(
+            'namespace' => 'acl',
+            'ttl'       => 5,
+            'cache_dir' => LUIGI_ROOT . '/data/cache',
+        ),
+    ),
+    'plugins' => array('serializer'),
+));
+
+$acl = $cache->getItem('acl');
+
+if (!$acl) {
+    $acl = new Acl();
+    $acl->addRole('guest');
+    $acl->addRole('customer', 'guest');
+    $acl->addRole('staff', 'customer');
+    $acl->addRole('admin');
+    
+    $acl->addResource('product');
+    $acl->addResource('order');
+    
+    $acl->allow('guest', 'product', array('show', 'list'));
+    $acl->allow('customer', 'product', array('basket'));
+    $acl->allow('staff', 'product', array('create', 'update'));
+    $acl->deny('guest', 'order');
+    $acl->allow('customer', 'order', array('create', 'send'));
+    $acl->allow('staff', 'order', array('update', 'list', 'finish'));
+    $acl->allow('admin');
+    
+    $cache->setItem('acl', $acl);
+    
+    Debug::dump('ACL in den Cache geschrieben');
+} else {
+    Debug::dump('ACL aus dem Cache gelesen');
+}
+</pre>
+<h3>Ausgabe</h3>
+<?php 
+use Zend\Cache\StorageFactory;
+use Zend\Debug\Debug;
+use Zend\Permissions\Acl\Acl;
+
+$cache = StorageFactory::factory(array(
+    'adapter' => array(
+        'name' => 'filesystem',
+        'options' => array(
+            'namespace' => 'acl',
+            'ttl'       => 5,
+            'cache_dir' => LUIGI_ROOT . '/data/cache',
+        ),
+    ),
+    'plugins' => array('serializer'),
+));
+
+$acl = $cache->getItem('acl');
+
+if (!$acl) {
+    $acl = new Acl();
+    $acl->addRole('guest');
+    $acl->addRole('customer', 'guest');
+    $acl->addRole('staff', 'customer');
+    $acl->addRole('admin');
+    
+    $acl->addResource('product');
+    $acl->addResource('order');
+    
+    $acl->allow('guest', 'product', array('show', 'list'));
+    $acl->allow('customer', 'product', array('basket'));
+    $acl->allow('staff', 'product', array('create', 'update'));
+    $acl->deny('guest', 'order');
+    $acl->allow('customer', 'order', array('create', 'send'));
+    $acl->allow('staff', 'order', array('update', 'list', 'finish'));
+    $acl->allow('admin');
+    
+    $cache->setItem('acl', $acl);
+    
+    Debug::dump('ACL in den Cache geschrieben');
+} else {
+    Debug::dump('ACL aus dem Cache gelesen');
+}
+?>
+</div>
+</div>

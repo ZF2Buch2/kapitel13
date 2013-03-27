@@ -1,0 +1,76 @@
+<?php 
+/**
+ * ZF2 Buch Kapitel 13
+ * 
+ * Das Buch 'Zend Framework 2 - Von den Grundlagen bis zur fertigen Anwendung'
+ * von Ralf Eggert ist im Addison-Wesley Verlag erschienen. 
+ * ISBN 978-3-8273-2994-3
+ * 
+ * @package    Application
+ * @author     Ralf Eggert <r.eggert@travello.de>
+ * @copyright  Alle Listings sind urheberrechtlich geschützt!
+ * @link       http://www.zendframeworkbuch.de/ und http://www.awl.de/2994
+ */
+
+/**
+ * Listing 13.4 view script
+ * 
+ * @package    Application
+ */
+?>
+<div class='row'>
+<div class='span9'>
+<h1>Listing 13.4</h1>
+<h3>ACL mit <code>Zend\Permissions\Acl</code> definieren</h3>
+<pre>
+&lt;?php
+use Zend\Debug\Debug;
+use Zend\Permissions\Acl\Acl;
+
+$acl = new Acl();
+$acl->addRole('guest');
+$acl->addRole('customer', 'guest');
+$acl->addRole('staff', 'customer');
+$acl->addRole('admin');
+
+$acl->addResource('product');
+$acl->addResource('order');
+
+$acl->allow('guest', 'product', array('show', 'list'));
+$acl->allow('customer', 'product', array('basket'));
+$acl->allow('staff', 'product', array('create', 'update'));
+$acl->deny('guest', 'order');
+$acl->allow('customer', 'order', array('create', 'send'));
+$acl->allow('staff', 'order', array('update', 'list', 'finish'));
+$acl->allow('admin');
+
+Debug::dump($acl->getRoles());
+Debug::dump($acl->getResources());
+</pre>
+<h3>Ausgabe</h3>
+<?php 
+use Zend\Debug\Debug;
+use Zend\Permissions\Acl\Acl;
+
+$acl = new Acl();
+$acl->addRole('guest');
+$acl->addRole('customer', 'guest');
+$acl->addRole('staff', 'customer');
+$acl->addRole('admin');
+
+$acl->addResource('product');
+$acl->addResource('order');
+
+$acl->allow('guest', 'product', array('show', 'list'));
+$acl->allow('customer', 'product', array('basket'));
+$acl->allow('staff', 'product', array('create', 'update'));
+$acl->deny('guest', 'order');
+$acl->allow('customer', 'order', array('create', 'send'));
+$acl->allow('staff', 'order', array('update', 'list', 'finish'));
+$acl->allow('admin');
+
+Debug::dump($acl->getRoles());
+Debug::dump($acl->getResources());
+?>
+</div>
+</div>

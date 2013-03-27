@@ -1,0 +1,90 @@
+<?php 
+/**
+ * ZF2 Buch Kapitel 13
+ * 
+ * Das Buch "Zend Framework 2 - Von den Grundlagen bis zur fertigen Anwendung"
+ * von Ralf Eggert ist im Addison-Wesley Verlag erschienen. 
+ * ISBN 978-3-8273-2994-3
+ * 
+ * @package    Application
+ * @author     Ralf Eggert <r.eggert@travello.de>
+ * @copyright  Alle Listings sind urheberrechtlich geschützt!
+ * @link       http://www.zendframeworkbuch.de/ und http://www.awl.de/2994
+ */
+
+/**
+ * Listing 13.14 view script
+ * 
+ * @package    Application
+ */
+?>
+<div class="row">
+<div class="span9">
+<h1>Listing 13.14</h1>
+<h3>Authentifizierung mit <code>DbTable</code> Adapter</h3>
+<pre>
+&lt;?php
+use Zend\Authentication\Adapter\DbTable;
+use Zend\Db\Adapter\Adapter;
+use Zend\Debug\Debug;
+
+$credentials = array(
+    array('name' =&gt; 'francesca', 'pass' =&gt; 'francesca'),
+    array('name' =&gt; 'luigi',     'pass' =&gt; 'francesca'),
+    array('name' =&gt; 'luigi',     'pass' =&gt; 'luigi'),
+    );
+
+$db = new Adapter(array(
+    'driver'   =&gt; 'Pdo_Sqlite',
+    'database' =&gt; LUIGI_ROOT . '/data/db/session.sqlite3.db',
+));
+
+$authAdapter = new DbTable($db, 'users', 'name', 'pass');
+
+foreach ($credentials as $row) {
+    $authAdapter-&gt;setIdentity($row['name']);
+    $authAdapter-&gt;setCredential(md5($row['pass']));
+    
+    $result = $authAdapter-&gt;authenticate();
+    
+    Debug::dump($result);
+    
+    if ($result->isValid()) {
+        Debug::dump($authAdapter->getResultRowObject(null, 'pass'));
+    }
+}
+</pre>
+<h3>Ausgabe</h3>
+<?php 
+use Zend\Authentication\Adapter\DbTable;
+use Zend\Db\Adapter\Adapter;
+use Zend\Debug\Debug;
+
+$credentials = array(
+    array('name' => 'francesca', 'pass' => 'francesca'),
+    array('name' => 'luigi',     'pass' => 'francesca'),
+    array('name' => 'luigi',     'pass' => 'luigi'),
+);
+
+$db = new Adapter(array(
+    'driver'   => 'Pdo_Sqlite',
+    'database' => LUIGI_ROOT . '/data/db/session.sqlite3.db',
+));
+
+$authAdapter = new DbTable($db, 'users', 'name', 'pass');
+
+foreach ($credentials as $row) {
+    $authAdapter->setIdentity($row['name']);
+    $authAdapter->setCredential(md5($row['pass']));
+    
+    $result = $authAdapter->authenticate();
+    
+    Debug::dump($result);
+    
+    if ($result->isValid()) {
+        Debug::dump($authAdapter->getResultRowObject(null, 'pass'));
+    }
+}
+?>
+</div>
+</div>

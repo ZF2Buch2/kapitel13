@@ -1,0 +1,142 @@
+<?php 
+/**
+ * ZF2 Buch Kapitel 13
+ * 
+ * Das Buch "Zend Framework 2 - Von den Grundlagen bis zur fertigen Anwendung"
+ * von Ralf Eggert ist im Addison-Wesley Verlag erschienen. 
+ * ISBN 978-3-8273-2994-3
+ * 
+ * @package    Application
+ * @author     Ralf Eggert <r.eggert@travello.de>
+ * @copyright  Alle Listings sind urheberrechtlich geschützt!
+ * @link       http://www.zendframeworkbuch.de/ und http://www.awl.de/2994
+ */
+
+/**
+ * Listing 13.16 view script
+ * 
+ * @package    Application
+ */
+?>
+<div class="row">
+<div class="span9">
+<h1>Listing 13.16</h1>
+<h3><code>AuthenticationService</code> mit <code>DbTable</code> einsetzen</h3>
+<pre>
+&lt;?php
+use Pizza\Form\LoginForm;
+use Pizza\Form\LogoutForm;
+use Zend\Authentication\AuthenticationService;
+use Zend\Authentication\Adapter\DbTable;
+use Zend\Db\Adapter\Adapter;
+use Zend\Http\PhpEnvironment\Request;
+
+$authService = new AuthenticationService();
+$request     = new Request();
+
+if ($request-&gt;isPost()) {
+    if ($request-&gt;getPost('login') && !$request-&gt;getPost('name')) {
+        $showMessage = 'Es wurde kein Benutzername eingegeben';
+    } elseif ($request-&gt;getPost('login')) {
+        $db = new Adapter(array(
+            'driver'   =&gt; 'Pdo_Sqlite',
+            'database' =&gt; LUIGI_ROOT . '/data/db/session.sqlite3.db',
+        ));
+        
+        $authAdapter = new DbTable($db, 'users', 'name', 'pass');
+        $authAdapter-&gt;setIdentity(strtolower($request-&gt;getPost('name')));
+        $authAdapter-&gt;setCredential(md5($request-&gt;getPost('pass')));
+        
+        $result = $authService-&gt;authenticate($authAdapter);
+        
+        if (!$result-&gt;isValid()) {
+            $showMessage = implode('&lt;br /&gt;', $result-&gt;getMessages());
+        }
+    } elseif ($request-&gt;getPost('logout')) {
+        $authService-&gt;clearIdentity();
+    }
+}
+
+if ($authService-&gt;hasIdentity()) {
+    $showMessage = 'Benutzer "' . $authService-&gt;getIdentity() . '" angemeldet!';
+}
+
+$alertClass = $authService-&gt;hasIdentity() ? 'alert-success' : 'alert-error';
+
+if ($showMessage) {
+    echo '&lt;div class="alert ' . $alertClass . '"&gt;' . $showMessage . '&lt;/div&gt;';
+}
+
+$this-&gt;headStyle()-&gt;appendStyle('label { width: 200px; }');
+
+$form = $authService-&gt;hasIdentity() ? new LogoutForm() : new LoginForm();
+$form-&gt;setData($request-&gt;getPost()-&gt;toArray());
+$form-&gt;prepare();
+
+echo $this-&gt;form()-&gt;openTag($form);
+foreach ($form as $element) {
+    echo $this-&gt;formRow($element);
+}
+echo $this-&gt;form()-&gt;closeTag();
+</pre>
+<h3>Ausgabe</h3>
+<div class="well">
+<?php
+use Pizza\Form\LoginForm;
+use Pizza\Form\LogoutForm;
+use Zend\Authentication\AuthenticationService;
+use Zend\Authentication\Adapter\DbTable;
+use Zend\Db\Adapter\Adapter;
+use Zend\Http\PhpEnvironment\Request;
+
+$authService = new AuthenticationService();
+$request     = new Request();
+
+if ($request->isPost()) {
+    if ($request->getPost('login') && !$request->getPost('name')) {
+        $showMessage = 'Es wurde kein Benutzername eingegeben';
+    } elseif ($request->getPost('login')) {
+        $db = new Adapter(array(
+            'driver'   => 'Pdo_Sqlite',
+            'database' => LUIGI_ROOT . '/data/db/session.sqlite3.db',
+        ));
+        
+        $authAdapter = new DbTable($db, 'users', 'name', 'pass');
+        $authAdapter->setIdentity(strtolower($request->getPost('name')));
+        $authAdapter->setCredential(md5($request->getPost('pass')));
+        
+        $result = $authService->authenticate($authAdapter);
+        
+        if (!$result->isValid()) {
+            $showMessage = implode('<br />', $result->getMessages());
+        }
+    } elseif ($request->getPost('logout')) {
+        $authService->clearIdentity();
+    }
+}
+
+if ($authService->hasIdentity()) {
+    $showMessage = '"' . $authService->getIdentity() . '" angemeldet!';
+}
+
+$alertClass = $authService->hasIdentity() ? 'alert-success' : 'alert-error';
+
+if (isset($showMessage)) {
+    echo '<div class="alert ' . $alertClass . '">' . $showMessage . '</div>';
+}
+
+$this->headStyle()->appendStyle('label { width: 200px; }');
+
+$form = $authService->hasIdentity() ? new LogoutForm() : new LoginForm();
+$form->setData($request->getPost()->toArray());
+$form->prepare();
+
+echo $this->form()->openTag($form);
+foreach ($form as $element) {
+    echo $this->formRow($element);
+}
+echo $this->form()->closeTag();
+?>
+</div>
+</div>
+</div>

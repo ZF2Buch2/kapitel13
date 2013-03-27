@@ -1,0 +1,94 @@
+<?php 
+/**
+ * ZF2 Buch Kapitel 13
+ * 
+ * Das Buch "Zend Framework 2 - Von den Grundlagen bis zur fertigen Anwendung"
+ * von Ralf Eggert ist im Addison-Wesley Verlag erschienen. 
+ * ISBN 978-3-8273-2994-3
+ * 
+ * @package    Application
+ * @author     Ralf Eggert <r.eggert@travello.de>
+ * @copyright  Alle Listings sind urheberrechtlich geschützt!
+ * @link       http://www.zendframeworkbuch.de/ und http://www.awl.de/2994
+ */
+
+/**
+ * Listing 13.10 view script
+ * 
+ * @package    Application
+ */
+?>
+<div class="row">
+<div class="span9">
+<h1>Listing 13.10</h1>
+<h3>Basic HTTP Authentication mit <code>Http</code> Adapter</h3>
+<pre>
+&lt;?php
+use Zend\Authentication\Adapter\Http;
+use Zend\Authentication\Adapter\Http\FileResolver;
+
+$sm = $this->getHelperPluginManager()->getServiceLocator();
+
+$response = $sm->get('response');
+$request  = $sm->get('request');
+
+$adapter = new Http(array(
+    'accept_schemes' => 'basic',
+    'realm'          => 'Luigis Pizza-Service',
+    'digest_domains' => '/listing/listing1310',
+    'nonce_timeout'  => 3600,
+));
+
+$basicResolver = new FileResolver();
+$basicResolver->setFile(LUIGI_ROOT . '/data/auth/basic.pw');
+
+$adapter->setBasicResolver($basicResolver);
+$adapter->setRequest($request);
+$adapter->setResponse($response);
+
+$result = $adapter->authenticate();
+
+if (!$result->isValid()) {
+    echo 'Du kommst hier nicht rein!';
+} else {
+    $identity = $result->getIdentity();
+    echo 'Herzlich Willkommen ' . $identity['username'] . '!';
+}
+</pre>
+<h3>Ausgabe</h3>
+<div class="well">
+<?php 
+use Zend\Authentication\Adapter\Http;
+use Zend\Authentication\Adapter\Http\FileResolver;
+
+$sm = $this->getHelperPluginManager()->getServiceLocator();
+
+$response = $sm->get('response');
+$request  = $sm->get('request');
+
+$adapter = new Http(array(
+    'accept_schemes' => 'basic',
+    'realm'          => 'Luigis Pizza-Service',
+    'digest_domains' => '/listing/listing1310',
+    'nonce_timeout'  => 3600,
+));
+
+$basicResolver = new FileResolver();
+$basicResolver->setFile(LUIGI_ROOT . '/data/auth/basic.pw');
+
+$adapter->setBasicResolver($basicResolver);
+$adapter->setRequest($request);
+$adapter->setResponse($response);
+
+$result = $adapter->authenticate();
+
+if (!$result->isValid()) {
+    echo 'Du kommst hier nicht rein!';
+} else {
+    $identity = $result->getIdentity();
+    echo 'Herzlich Willkommen ' . $identity['username'] . '!';
+}
+?>
+</div>
+</div>
+</div>

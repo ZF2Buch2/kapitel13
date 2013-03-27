@@ -1,0 +1,71 @@
+<?php 
+/**
+ * ZF2 Buch Kapitel 13
+ * 
+ * Das Buch "Zend Framework 2 - Von den Grundlagen bis zur fertigen Anwendung"
+ * von Ralf Eggert ist im Addison-Wesley Verlag erschienen. 
+ * ISBN 978-3-8273-2994-3
+ * 
+ * @package    Application
+ * @author     Ralf Eggert <r.eggert@travello.de>
+ * @copyright  Alle Listings sind urheberrechtlich geschützt!
+ * @link       http://www.zendframeworkbuch.de/ und http://www.awl.de/2994
+ */
+
+/**
+ * Listing 13.15 view script
+ * 
+ * @package    Application
+ */
+?>
+<div class="row">
+<div class="span9">
+<h1>Listing 13.15</h1>
+<h3>Formulare zum Anmelden und Abmelden mit <code>Zend\Authentication</code></h3>
+<pre>
+&lt;?php
+namespace Pizza\Form;
+
+use Zend\Form\Element\Password;
+use Zend\Form\Element\Submit;
+use Zend\Form\Element\Text;
+use Zend\Form\Form;
+
+class LoginForm extends Form
+{
+    public function __construct()
+    {
+        parent::__construct('login');
+        
+        $nameElement = new Text('name');
+        $nameElement->setLabel('Benutzername');
+        
+        $passElement = new Password('pass');
+        $passElement->setLabel('Passwort');
+
+        $submitElement = new Submit('login');
+        $submitElement->setValue('Anmelden');
+        $submitElement->setAttribute('class', 'btn');
+        
+        $this->add($nameElement);
+        $this->add($passElement);
+        $this->add($submitElement);
+    }
+}
+
+class LogoutForm extends Form
+{
+    public function __construct()
+    {
+        parent::__construct('logout');
+        
+        $submitElement = new Submit('logout');
+        $submitElement->setValue('Abmelden');
+        $submitElement->setAttribute('class', 'btn');
+        
+        $this->add($submitElement);
+    }
+}
+</pre>
+</div>
+</div>

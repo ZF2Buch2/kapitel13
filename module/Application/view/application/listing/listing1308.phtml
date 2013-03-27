@@ -1,0 +1,122 @@
+<?php 
+/**
+ * ZF2 Buch Kapitel 13
+ * 
+ * Das Buch "Zend Framework 2 - Von den Grundlagen bis zur fertigen Anwendung"
+ * von Ralf Eggert ist im Addison-Wesley Verlag erschienen. 
+ * ISBN 978-3-8273-2994-3
+ * 
+ * @package    Application
+ * @author     Ralf Eggert <r.eggert@travello.de>
+ * @copyright  Alle Listings sind urheberrechtlich geschützt!
+ * @link       http://www.zendframeworkbuch.de/ und http://www.awl.de/2994
+ */
+
+/**
+ * Listing 13.8 view script
+ * 
+ * @package    Application
+ */
+?>
+<div class="row">
+<div class="span9">
+<h1>Listing 13.8</h1>
+<h3><code>Zend\Permissions\Rbac</code> abfragen</h3>
+<pre>
+&lt;?php
+use Zend\Debug\Debug;
+use Zend\Permissions\Rbac\Rbac;
+use Zend\Permissions\Rbac\Role;
+
+$roleGuest = new Role('guest');
+$roleGuest->addPermission('pizza_list');
+$roleGuest->addPermission('pizza_show');
+
+$roleCustomer = new Role('customer');
+$roleCustomer->addPermission('pizza_basket');
+$roleCustomer->addPermission('order_create');
+$roleCustomer->addPermission('order_send');
+$roleCustomer->addChild($roleGuest);
+
+$roleStaff = new Role('staff');
+$roleStaff->addPermission('pizza_create');
+$roleStaff->addPermission('pizza_update');
+$roleStaff->addPermission('order_update');
+$roleStaff->addPermission('order_cancel');
+$roleStaff->addPermission('order_finish');
+$roleStaff->addChild($roleCustomer);
+
+$roleAdmin = new Role('admin');
+$roleAdmin->addPermission('pizza_delete');
+$roleAdmin->addPermission('order_delete');
+$roleAdmin->addChild($roleStaff);
+
+$rbac = new Rbac();
+$rbac->addRole($roleGuest);
+$rbac->addRole($roleCustomer);
+$rbac->addRole($roleStaff);
+$rbac->addRole($roleAdmin);
+
+Debug::dump($rbac->isGranted('guest', 'pizza_list'));
+Debug::dump($rbac->isGranted('customer', 'pizza_basket'));
+Debug::dump($rbac->isGranted('customer', 'pizza_list'));
+Debug::dump($rbac->isGranted('staff', 'pizza_list'));
+Debug::dump($rbac->isGranted('staff', 'order_cancel'));
+Debug::dump($rbac->isGranted('admin', 'pizza_delete'));
+Debug::dump($rbac->isGranted('admin', 'order_create'));
+
+Debug::dump($rbac->isGranted('guest', 'pizza_create'));
+Debug::dump($rbac->isGranted('customer', 'order_finish'));
+Debug::dump($rbac->isGranted('staff', 'order_delete'));
+Debug::dump($rbac->isGranted('admin', 'order_copy'));
+</pre>
+<h3>Ausgabe</h3>
+<?php 
+use Zend\Debug\Debug;
+use Zend\Permissions\Rbac\Rbac;
+use Zend\Permissions\Rbac\Role;
+
+$roleGuest = new Role('guest');
+$roleGuest->addPermission('pizza_list');
+$roleGuest->addPermission('pizza_show');
+
+$roleCustomer = new Role('customer');
+$roleCustomer->addPermission('pizza_basket');
+$roleCustomer->addPermission('order_create');
+$roleCustomer->addPermission('order_send');
+$roleCustomer->addChild($roleGuest);
+
+$roleStaff = new Role('staff');
+$roleStaff->addPermission('pizza_create');
+$roleStaff->addPermission('pizza_update');
+$roleStaff->addPermission('order_update');
+$roleStaff->addPermission('order_cancel');
+$roleStaff->addPermission('order_finish');
+$roleStaff->addChild($roleCustomer);
+
+$roleAdmin = new Role('admin');
+$roleAdmin->addPermission('pizza_delete');
+$roleAdmin->addPermission('order_delete');
+$roleAdmin->addChild($roleStaff);
+
+$rbac = new Rbac();
+$rbac->addRole($roleGuest);
+$rbac->addRole($roleCustomer);
+$rbac->addRole($roleStaff);
+$rbac->addRole($roleAdmin);
+
+Debug::dump($rbac->isGranted('guest', 'pizza_list'));
+Debug::dump($rbac->isGranted('customer', 'pizza_basket'));
+Debug::dump($rbac->isGranted('customer', 'pizza_list'));
+Debug::dump($rbac->isGranted('staff', 'pizza_list'));
+Debug::dump($rbac->isGranted('staff', 'order_cancel'));
+Debug::dump($rbac->isGranted('admin', 'pizza_delete'));
+Debug::dump($rbac->isGranted('admin', 'order_create'));
+
+Debug::dump($rbac->isGranted('guest', 'pizza_create'));
+Debug::dump($rbac->isGranted('customer', 'order_finish'));
+Debug::dump($rbac->isGranted('staff', 'order_delete'));
+Debug::dump($rbac->isGranted('admin', 'order_copy'));
+?>
+</div>
+</div>
